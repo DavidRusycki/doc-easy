@@ -13,6 +13,15 @@
           <v-list-item prepend-icon="mdi-account-multiple" title="Shared with me" value="shared"></v-list-item>
           <v-list-item prepend-icon="mdi-star" title="Starred" value="starred"></v-list-item>
         </v-list>
+
+        
+        <template v-slot:append>
+            <div class="pa-2" >
+              <v-btn block>
+                Logout
+              </v-btn>
+            </div>
+          </template>
       </v-navigation-drawer>
   
   </template>
