@@ -3,34 +3,64 @@
 
         <AbaLateral></AbaLateral>
 
-        <v-main class="d-flex align-center justify-center" style="min-height: 300px;">
+        <v-main class="d-flex align-center justify-center">
+            <v-container>
+                <v-row>
+                    <v-col v-for="n in 3" :key="n" cols="6">
+                        <v-card max-width="500" width="500" height="200" class="mx-auto mt-4 px-15 pt-5 card-local" >
+                            <v-card-title class="card-tittle">
+                                PROESDE
+                            </v-card-title>
 
-            <v-col v-for="n in 3" :key="n" cols="12" sm="4">
-                <v-row no-gutters v-for="n in 3" :key="n">
+                            <v-card-subtitle class="pt-5">
+                                Unidavi - SC
+                            </v-card-subtitle>
 
-                    <v-card class="mx-auto mt-4" max-width="344">
-                        <v-img src="https://cdn.vuetifyjs.com/images/cards/sunshine.jpg" height="200px" cover></v-img>
+                            <v-card-actions>
+                                <v-btn color="blue-lighten-2" variant="text">
+                                    Abrir
+                                </v-btn>
+                            </v-card-actions>
+                        </v-card>
+                    </v-col>
+                    <v-col v-for="n in 2" :key="n" cols="6">
+                        <v-card max-width="500" width="500" height="200" class="mx-auto mt-4 px-15 pt-5 card-local" >
+                            <v-card-title class="card-tittle">
+                                UNIEDU
+                            </v-card-title>
 
-                        <v-card-title>
-                            Top western road trips
-                        </v-card-title>
+                            <v-card-subtitle class="pt-5">
+                                Uniedu - SC
+                            </v-card-subtitle>
 
-                        <v-card-subtitle>
-                            1,000 miles of wonder
-                        </v-card-subtitle>
+                            <v-card-actions>
+                                <v-btn color="blue-lighten-2" variant="text">
+                                    Abrir
+                                </v-btn>
+                            </v-card-actions>
+                        </v-card>
+                    </v-col>
+                    <v-col v-for="n in 2" :key="n" cols="6">
+                        <v-card max-width="500" width="500" height="200" class="mx-auto mt-4 px-15 pt-5 card-local" >
+                            <v-card-title class="card-tittle">
+                                FILANTROPIA
+                            </v-card-title>
 
-                        <v-card-actions>
-                            <v-btn color="orange-lighten-2" variant="text">
-                                Explore
-                            </v-btn>
-                        </v-card-actions>
-                    </v-card>
+                            <v-card-subtitle class="pt-5">
+                                Unidavi - SC
+                            </v-card-subtitle>
+
+                            <v-card-actions>
+                                <v-btn color="blue-lighten-2" variant="text">
+                                    Abrir
+                                </v-btn>
+                            </v-card-actions>
+                        </v-card>
+                    </v-col>
                 </v-row>
-
-            </v-col>
-
-
+            </v-container>
         </v-main>
+
 
     </v-container>
 </template>
@@ -39,4 +69,10 @@
 import AbaLateral from '@/components/AbaLateral.vue'
 
 </script>
+
+<style>
+.card-tittle {
+    font-size: 3em !important;
+}
+</style>
   
