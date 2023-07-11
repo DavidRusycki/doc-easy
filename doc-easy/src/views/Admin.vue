@@ -1,33 +1,16 @@
 <template>
-    <v-container class="fill-height">
+    <v-container class="">
 
         <AbaLateral></AbaLateral>
 
-        <v-main class="d-flex align-center justify-center">
-
-            <v-card>
-
-
-
-
-                <spam>Código</spam>
-                <spam>Nome</spam>
-                <spam>Descrição</spam>
-                <spam>Ativo</spam>
-            </v-card>
-
-
-
-
-
-        </v-main>
-
+        <ConsultaPlano></ConsultaPlano>
 
     </v-container>
 </template>
   
 <script setup>
 import AbaLateral from '@/components/AbaLateral.vue'
+import ConsultaPlano from '@/components/ConsultaPlano.vue'
 
 </script>
 
