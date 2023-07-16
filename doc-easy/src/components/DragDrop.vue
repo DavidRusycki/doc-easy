@@ -100,8 +100,8 @@ export default {
                         arrayNomesIguaisNovos.push(file);
                         arrayNomesIguaisAtual.push(fileAtual);
                         adiciona = false;
+                        break;
                     }
-                    break;
                 }
 
                 if (adiciona) {

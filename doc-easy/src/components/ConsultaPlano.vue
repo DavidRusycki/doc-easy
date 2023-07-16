@@ -20,6 +20,7 @@
 
                                 </form>
                             </v-card-text>
+                            <DragDrop></DragDrop>
                             <v-card-actions>
                                 <v-btn color="green" class="me-4" type="submit">
                                     Inserir
@@ -95,7 +96,12 @@
 </template>
 
 <script>
+import DragDrop from '@/components/DragDrop.vue';
+
 export default {
+    components:{
+        'DragDrop': DragDrop,
+    },
     data() {
         return {
             dialog: false,
