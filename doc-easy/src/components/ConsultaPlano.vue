@@ -18,11 +18,12 @@
 
                                     <v-text-field label="E-mail"></v-text-field>
 
+                                    <label>Documento de exemplo:</label>
+                                    <DragDrop></DragDrop>
                                 </form>
                             </v-card-text>
-                            <DragDrop></DragDrop>
                             <v-card-actions>
-                                <v-btn color="green" class="me-4" type="submit">
+                                <v-btn @click="insert()" color="green" class="me-4" type="submit">
                                     Inserir
                                 </v-btn>
 
@@ -71,7 +72,7 @@
                     <td>{{ item.descricao }}</td>
                     <td>{{ item.situacao }}</td>
                     <td>
-                        <v-btn class="mr-2" size="small" variant="tonal" color="yellow-darken-2">
+                        <v-btn class="mr-2 mt-1" size="small" variant="tonal" color="yellow-darken-2">
                             <v-icon color="yellow-darken-2" start>
                                 mdi-open-in-new
                             </v-icon>
@@ -79,7 +80,7 @@
                             Editar
                         </v-btn>
 
-                        <v-btn class="mr-2" size="small" variant="tonal" color="red">
+                        <v-btn class="mr-2 mt-1" size="small" variant="tonal" color="red">
                             <v-icon color="red" start>
                                 mdi-close-circle
                             </v-icon>
@@ -90,8 +91,6 @@
                 </tr>
             </tbody>
         </v-table>
-
-
     </v-card>
 </template>
 
@@ -128,5 +127,37 @@ export default {
             ],
         }
     },
+    methods: {
+        async insert() {
+            debugger;
+
+            console.log(this.getDocuments());
+            let documents = this.getDocuments();
+
+            let formData = new FormData();
+
+            for(let indice in documents) {
+                formData.append("files", documents[indice]);
+            }
+
+            formData.append("config", '{}');
+
+            let req = await fetch('http://localhost:8080/merge', {method: "POST", body: formData});
+
+            console.log(req.status);
+
+            debugger;
+        },
+        getDocuments() {
+            return window.eu;
+        },
+        limpaLocalStorage() {
+            localStorage.documents = ['asdf'];
+            window.eu = [];
+        }
+    },
+    mounted() {
+        this.limpaLocalStorage();
+    }
 }
 </script>

@@ -35,7 +35,7 @@
 <script>
 
 export default {
-    data: () => {
+    data() {
         return {
             files: []
         }
@@ -57,9 +57,13 @@ export default {
             files = this.getNaoAdicionados(files);
 
             let oldFiles = [...this.files];
+            let newFiles = [];
+            newFiles.push(...oldFiles);
+            newFiles.push(...files);                
+            this.updateLocalStorage(newFiles);
+
             this.files = [];
-            this.files.push(...oldFiles);
-            this.files.push(...files);                
+            this.files.push(...newFiles);
 
             console.log(this.files);
             let uploadInput = document.getElementById('input-file');
@@ -70,15 +74,13 @@ export default {
         },
         remove(indice) {
             this.files.splice(indice, 1);
+            this.updateLocalStorage(this.files);
         },
         clickOnInput() {
             let uploadInput = document.getElementById('input-file');
             uploadInput.click();
         },
         getNaoAdicionados(files) {
-
-            debugger;
-
 
             let naoAdd = [];
 
@@ -127,6 +129,14 @@ export default {
             }
 
             return naoAdd;
+        },
+        updateLocalStorage(files) {
+            //Inicia a localStorage para os documentos
+            if (typeof window.eu == 'undefined') {
+                window.eu = [];
+            }
+            window.eu = [];
+            window.eu.push(...files);
         }
     }
 }
