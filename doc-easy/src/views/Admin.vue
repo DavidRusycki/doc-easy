@@ -3,14 +3,14 @@
 
         <AbaLateral></AbaLateral>
 
-        <ConsultaPlano></ConsultaPlano>
+        <ConsultaDocumentosPlano></ConsultaDocumentosPlano>
 
     </v-container>
 </template>
   
 <script setup>
 import AbaLateral from '@/components/AbaLateral.vue'
-import ConsultaPlano from '@/components/ConsultaPlano.vue'
+import ConsultaDocumentosPlano from '@/components/ConsultaDocumentosPlano.vue'
 
 </script>
 

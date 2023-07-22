@@ -20,7 +20,11 @@ export default defineConfig({
       },
     }),
   ],
-  define: { 'process.env': {} },
+  define: { 'process.env': {
+
+    'ENDERECO_BACK_END':'http://localhost:8080',
+
+  } },
   resolve: {
     alias: {
       '@': fileURLToPath(new URL('./src', import.meta.url))

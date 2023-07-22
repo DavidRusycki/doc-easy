@@ -2,7 +2,7 @@
     <v-app-bar title="Doc Easy" flat>
       
       <template v-slot:prepend>
-        <v-app-bar-nav-icon icon="mdi-folder"></v-app-bar-nav-icon>
+        <v-app-bar-nav-icon color="black" icon="mdi-folder" :href="'/'"></v-app-bar-nav-icon>
       </template>
 
     </v-app-bar>

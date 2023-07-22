@@ -72,7 +72,7 @@
                     <td>{{ item.descricao }}</td>
                     <td>{{ item.situacao }}</td>
                     <td>
-                        <v-btn class="mr-2 mt-1" size="small" variant="tonal" color="yellow-darken-2">
+                        <v-btn @click="teste(item.codigo)" class="mr-2 mt-1" size="small" variant="tonal" color="yellow-darken-2">
                             <v-icon color="yellow-darken-2" start>
                                 mdi-open-in-new
                             </v-icon>
@@ -128,6 +128,12 @@ export default {
         }
     },
     methods: {
+        teste(numero) {
+            this.dialog = true;
+            console.log(numero);
+            this.desserts[2]['codigo'] = 4;
+            console.log(this.$route);
+        },
         async insert() {
             debugger;
 
