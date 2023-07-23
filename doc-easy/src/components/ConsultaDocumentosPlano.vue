@@ -16,13 +16,13 @@
                         <v-card>
                             <v-card-text>
                                 <form @submit.prevent="submit">
-                                    <v-text-field label="Nome"></v-text-field>
+                                    <v-text-field label="Nome" id="nome"></v-text-field>
 
-                                    <v-text-field label="Descrição Simples"></v-text-field>
+                                    <v-text-field label="Descrição Simples" id="descricaoSimples"></v-text-field>
 
-                                    <v-text-field label="Descrição Completa"></v-text-field>
+                                    <v-text-field label="Descrição Completa" id="descricaoCompleta"></v-text-field>
 
-                                    <v-text-field label="Situação"></v-text-field>
+                                    <v-text-field label="Situação" id="situacao"></v-text-field>
 
                                     <label>Documento de exemplo:</label>
                                     <DragDrop multiple="false"></DragDrop>
@@ -115,26 +115,7 @@ export default {
             urlBackEnd: process.env.ENDERECO_BACK_END,
             plan: {},
             dialog: false,
-            desserts: [
-                // {
-                //     codigo: 1,
-                //     nome: 'Renda Familiar',
-                //     descricao: 'Representa a renda mensal do grupo familiar',
-                //     situacao: 'Ativo'
-                // },
-                // {
-                //     codigo: 2,
-                //     nome: 'Bens Familiares',
-                //     descricao: 'Contém os bens do grupo familiar',
-                //     situacao: 'Ativo'
-                // },
-                // {
-                //     codigo: 3,
-                //     nome: 'Tempo de residência SC',
-                //     descricao: 'Contém comprovações de 2 anos de moradia no estado',
-                //     situacao: 'Ativo'
-                // },
-            ],
+            desserts: [],
         }
     },
     methods: {
@@ -145,24 +126,36 @@ export default {
             console.log(this.$route);
         },
         async insert() {
+            this.overlay = true;
             debugger;
+
+            let nome = document.getElementById('nome').value;
+            let descricaoSimples = document.getElementById('descricaoSimples').value;
+            let descricaoCompleta = document.getElementById('descricaoCompleta').value;
+            let situacao = document.getElementById('situacao').value;
+
+            let bodyJson = {};
+            bodyJson.idPlano = this.plan.plan.id;
+            bodyJson.nome = nome;
+            bodyJson.descricao = descricaoSimples;
+            bodyJson.descricaoCompleta = descricaoCompleta;
+            bodyJson.situacao = situacao;
 
             console.log(this.getDocuments());
-            let documents = this.getDocuments();
+            let documentUpload = this.getDocuments();
 
             let formData = new FormData();
+            formData.append("file", documentUpload[0]);
+            formData.append("document", JSON.stringify(bodyJson));
 
-            for (let indice in documents) {
-                formData.append("files", documents[indice]);
-            }
+            let req = await fetch(this.urlBackEnd + '/doceasy/document/new', { method: "POST", body: formData });
 
-            formData.append("config", '{}');
+            let newDocument = await req.json();
 
-            let req = await fetch('http://localhost:8080/merge', { method: "POST", body: formData });
+            this.plan.documents.push(newDocument);
 
-            console.log(req.status);
-
-            debugger;
+            this.dialog = false;
+            this.overlay = false;
         },
         getDocuments() {
             return window.eu;

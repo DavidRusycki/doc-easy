@@ -76,7 +76,7 @@ export default {
             else {
                 this.files = [];
                 this.files.push(files[0]);
-                this.updateLocalStorage(files[0]);
+                this.updateLocalStorage([files[0]]);
                 let uploadInput = document.getElementById('input-file');
                 uploadInput.value = null
             }
