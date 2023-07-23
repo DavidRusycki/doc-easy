@@ -1,8 +1,12 @@
 <template>
+    <v-overlay :model-value="overlay" class="align-center justify-center">
+        <v-progress-circular color="green" indeterminate size="64"></v-progress-circular>
+    </v-overlay>
+
     <v-card class="mx-auto border-radius-none box-shadow-none">
         <v-card-item class="bg-blue-darken-4">
             <v-card-title>
-                Plano do Uniedu
+                Plano do {{ typeof plan.plan !== 'undefined' ? plan.plan.nome : 'Loading...' }}
             </v-card-title>
 
             <template v-slot:append>
@@ -12,14 +16,16 @@
                         <v-card>
                             <v-card-text>
                                 <form @submit.prevent="submit">
-                                    <v-text-field label="Name"></v-text-field>
+                                    <v-text-field label="Nome"></v-text-field>
 
-                                    <v-text-field label="Phone Number"></v-text-field>
+                                    <v-text-field label="Descrição Simples"></v-text-field>
 
-                                    <v-text-field label="E-mail"></v-text-field>
+                                    <v-text-field label="Descrição Completa"></v-text-field>
+
+                                    <v-text-field label="Situação"></v-text-field>
 
                                     <label>Documento de exemplo:</label>
-                                    <DragDrop></DragDrop>
+                                    <DragDrop multiple="false"></DragDrop>
                                 </form>
                             </v-card-text>
                             <v-card-actions>
@@ -40,7 +46,7 @@
         </v-card-item>
 
         <v-card-text class="pt-4">
-            Documentos do processo de inscrição para o Uniedu SC
+            {{ typeof plan.plan !== 'undefined' ? plan.plan.descricao : 'Loading...' }}
         </v-card-text>
 
         <v-divider></v-divider>
@@ -66,13 +72,14 @@
                 </tr>
             </thead>
             <tbody>
-                <tr v-for="item in desserts" :key="item.name">
-                    <td>{{ item.codigo }}</td>
+                <tr v-for="(item, indice) in desserts" :key="item.name">
+                    <td>{{ ++indice }}</td>
                     <td>{{ item.nome }}</td>
                     <td>{{ item.descricao }}</td>
-                    <td>{{ item.situacao }}</td>
+                    <td>{{ item.situacao == 1 ? 'Ativo' : 'Inativo' }}</td>
                     <td>
-                        <v-btn @click="teste(item.codigo)" class="mr-2 mt-1" size="small" variant="tonal" color="yellow-darken-2">
+                        <v-btn @click="teste(item.codigo)" class="mr-2 mt-1" size="small" variant="tonal"
+                            color="yellow-darken-2">
                             <v-icon color="yellow-darken-2" start>
                                 mdi-open-in-new
                             </v-icon>
@@ -96,34 +103,37 @@
 
 <script>
 import DragDrop from '@/components/DragDrop.vue';
+import router from '@/router';
 
 export default {
-    components:{
+    components: {
         'DragDrop': DragDrop,
     },
     data() {
         return {
+            overlay: true,
+            urlBackEnd: process.env.ENDERECO_BACK_END,
+            plan: {},
             dialog: false,
             desserts: [
-                {
-                    codigo: 1,
-                    nome: 'Renda Familiar',
-                    descricao: 'Representa a renda mensal do grupo familiar',
-                    situacao: 'Ativo'
-                },
-                {
-                    codigo: 2,
-                    nome: 'Bens Familiares',
-                    descricao: 'Contém os bens do grupo familiar',
-                    situacao: 'Ativo'
-                },
-                {
-                    codigo: 3,
-                    nome: 'Tempo de residência SC',
-                    descricao: 'Contém comprovações de 2 anos de moradia no estado',
-                    situacao: 'Ativo'
-                },
-
+                // {
+                //     codigo: 1,
+                //     nome: 'Renda Familiar',
+                //     descricao: 'Representa a renda mensal do grupo familiar',
+                //     situacao: 'Ativo'
+                // },
+                // {
+                //     codigo: 2,
+                //     nome: 'Bens Familiares',
+                //     descricao: 'Contém os bens do grupo familiar',
+                //     situacao: 'Ativo'
+                // },
+                // {
+                //     codigo: 3,
+                //     nome: 'Tempo de residência SC',
+                //     descricao: 'Contém comprovações de 2 anos de moradia no estado',
+                //     situacao: 'Ativo'
+                // },
             ],
         }
     },
@@ -142,13 +152,13 @@ export default {
 
             let formData = new FormData();
 
-            for(let indice in documents) {
+            for (let indice in documents) {
                 formData.append("files", documents[indice]);
             }
 
             formData.append("config", '{}');
 
-            let req = await fetch('http://localhost:8080/merge', {method: "POST", body: formData});
+            let req = await fetch('http://localhost:8080/merge', { method: "POST", body: formData });
 
             console.log(req.status);
 
@@ -160,10 +170,18 @@ export default {
         limpaLocalStorage() {
             localStorage.documents = ['asdf'];
             window.eu = [];
+        },
+        async loadTableRegisters() {
+            debugger;
+            this.overlay = true;
+            this.plan = await (await fetch(this.urlBackEnd + '/doceasy/document/'+ this.$route.params.name)).json();
+            this.desserts = this.plan.documents;
+            this.overlay = false;
         }
     },
     mounted() {
         this.limpaLocalStorage();
+        this.loadTableRegisters();
     }
 }
 </script>

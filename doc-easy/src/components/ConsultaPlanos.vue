@@ -56,7 +56,7 @@
                             </v-card-subtitle>
 
                             <v-card-actions>
-                                <v-btn color="blue-lighten-2" variant="text" :href="'/admin/' + plan.nome.toLowerCase()">
+                                <v-btn color="blue-lighten-2" variant="text" :href="'/admin/' + plan.nome">
                                     Abrir
                                 </v-btn>
                             </v-card-actions>
@@ -86,7 +86,7 @@ export default {
     methods: {
         async loadPlans() {
             this.overlay = true;
-            let req = await (await fetch(this.urlBackEnd + '/doceasy/document/plan/all')).json();
+            let req = await (await fetch(this.urlBackEnd + '/doceasy/plan/all')).json();
 
             this.plans = req;
             this.overlay = false;
@@ -100,7 +100,7 @@ export default {
             dados.criador = document.getElementById('campoCriador').value;
             dados.descricao = document.getElementById('campoDescricao').value;
 
-            let req = await (await fetch(this.urlBackEnd + '/doceasy/document/plan/new', { method: "POST", body: JSON.stringify(dados), headers: { "Content-Type": "application/json" } })).json();
+            let req = await (await fetch(this.urlBackEnd + '/doceasy/plan/new', { method: "POST", body: JSON.stringify(dados), headers: { "Content-Type": "application/json" } })).json();
 
             this.dialog = false;
             this.overlay = false;

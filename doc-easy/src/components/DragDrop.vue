@@ -3,15 +3,15 @@
 
         <div class="dentro">
 
-            <div class="area-cards" >
-                <v-card v-for="(file, indice) in files"  variant="tonal" width="150" class="card-documento">
+            <div class="area-cards">
+                <v-card v-for="(file, indice) in files" variant="tonal" width="150" class="card-documento">
                     <v-icon style="margin-top: 10px;" color="#00000080" icon="mdi-file-document" size="50"></v-icon>
-                    <v-card-subtitle class="titulo-documento" >
+                    <v-card-subtitle class="titulo-documento">
                         {{ file.name }}
                     </v-card-subtitle>
 
 
-                    <v-btn @click="remove(indice)" color="red" variant="text" height="25" class="botao-remover" >
+                    <v-btn @click="remove(indice)" color="red" variant="text" height="25" class="botao-remover">
                         Remover
                     </v-btn>
                 </v-card>
@@ -35,6 +35,9 @@
 <script>
 
 export default {
+    props: {
+        multiple: true,
+    },
     data() {
         return {
             files: []
@@ -54,20 +57,29 @@ export default {
             this.mountFile(file);
         },
         mountFile(files) {
-            files = this.getNaoAdicionados(files);
+            if (this.multiple === 'true') {
+                files = this.getNaoAdicionados(files);
 
-            let oldFiles = [...this.files];
-            let newFiles = [];
-            newFiles.push(...oldFiles);
-            newFiles.push(...files);                
-            this.updateLocalStorage(newFiles);
+                let oldFiles = [...this.files];
+                let newFiles = [];
+                newFiles.push(...oldFiles);
+                newFiles.push(...files);
+                this.updateLocalStorage(newFiles);
 
-            this.files = [];
-            this.files.push(...newFiles);
+                this.files = [];
+                this.files.push(...newFiles);
 
-            console.log(this.files);
-            let uploadInput = document.getElementById('input-file');
-            uploadInput.value = null
+                console.log(this.files);
+                let uploadInput = document.getElementById('input-file');
+                uploadInput.value = null
+            }
+            else {
+                this.files = [];
+                this.files.push(files[0]);
+                this.updateLocalStorage(files[0]);
+                let uploadInput = document.getElementById('input-file');
+                uploadInput.value = null
+            }
         },
         changeInputFile(e) {
             this.prepareFileList(e);
@@ -117,7 +129,7 @@ export default {
                 let fileNovo = arrayNomesIguaisNovos[indice11];
                 for (let indice22 in arrayNomesIguaisAtual) {
                     let file = arrayNomesIguaisAtual[indice22];
-                    
+
                     if (fileNovo.size == file.size && fileNovo.lastModified == file.lastModified) {
                         adiciona = false;
                         break;
@@ -144,7 +156,6 @@ export default {
 </script>
 
 <style scoped>
-
 .card-documento {
     text-align: center;
     margin-left: 10px;
@@ -155,7 +166,7 @@ export default {
     width: 100%;
 }
 
-.titulo-documento {  
+.titulo-documento {
     font-size: 0.8em;
 }
 

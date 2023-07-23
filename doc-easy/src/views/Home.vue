@@ -3,10 +3,9 @@
     <v-row>
       <v-col style="display: flex">
         <div class="conteudo">
-          <h1 class="titulo">Facilitando a organização de documentos.</h1>
+          <h1 class="titulo" id="titulo">Facilitando a organização de documentos.</h1>
 
-          <p class="descricao">Prepare seus documentos mais rapidamente, de forma intuitiva, facilitada e que realmente
-            funciona.</p>
+          <p class="descricao">Prepare seus documentos mais rapidamente, de forma intuitiva, facilitada e que realmente funciona.</p>
 
           <div>
             <v-btn :href="'planos'" color="blue-lighten-2 ml-2">
@@ -27,7 +26,40 @@
   </v-container>
 </template>
 
-<script setup>
+<script>
+
+export default {
+  data() {
+    return {
+      firstTime: true,
+      initialFrase: '',
+      lettersToAdd: [],
+    }
+  },
+  methods: {
+    writer() {
+      if (this.firstTime) {
+        this.initialFrase = document.getElementById('titulo').innerHTML;
+        this.firstTime = false;
+      }
+
+      this.lettersToAdd = this.initialFrase.split('');
+
+      document.getElementById('titulo').innerHTML = '';
+
+      let id = setInterval(()=>{
+        let letter = this.lettersToAdd.splice(0,1)
+        document.getElementById('titulo').innerHTML += letter;
+        if (this.lettersToAdd.length == 0) {
+          clearInterval(id);
+        }
+      }, 20);
+    }
+  },
+  mounted() {
+    this.writer();
+  }
+}
 
 </script>
 
