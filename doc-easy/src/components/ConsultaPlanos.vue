@@ -1,9 +1,9 @@
 <template>
-    <v-container class="">
+    <Carregamento :overlay="carregando"></Carregamento>
+    <MensagemModalFalha v-if="mostraMensagemFalha" :msg="mensagem" :titulo="titulo"></MensagemModalFalha>
+    <IndicadorAcao v-if="mostraIndicador" :msg="mensagem" :titulo="titulo" :tipo="tipoIndicador"></IndicadorAcao>
 
-        <v-overlay :model-value="overlay" class="align-center justify-center">
-            <v-progress-circular color="green" indeterminate size="64"></v-progress-circular>
-        </v-overlay>
+    <v-container class="">
 
         <AbaLateral></AbaLateral>
 
@@ -70,29 +70,55 @@
   
 <script >
 import AbaLateral from '@/components/AbaLateral.vue'
+import Carregamento from '@/components/Carregamento.vue'
+import MensagemModalFalha from '@/components/MensagemModalFalha.vue';
+import IndicadorAcao from '@/components/IndicadorAcao.vue';
 
 export default {
     components: {
-        AbaLateral
+        'AbaLateral': AbaLateral,
+        'Carregamento': Carregamento,
+        'MensagemModalFalha': MensagemModalFalha,
+        'IndicadorAcao': IndicadorAcao,
     },
     data() {
         return {
-            overlay: false,
+            carregando: false,
             dialog: false,
             urlBackEnd: process.env.ENDERECO_BACK_END,
             plans: [],
+            mensagem: '',
+            titulo: '',
+            mostraIndicador: false,
+            tipoIndicador: 'success',
+            mostraMensagemFalha: false,
         }
     },
     methods: {
         async loadPlans() {
-            this.overlay = true;
-            let req = await (await fetch(this.urlBackEnd + '/doceasy/plan/all')).json();
 
-            this.plans = req;
-            this.overlay = false;
+            try {
+                this.carregando = true;
+                let req = await fetch(this.urlBackEnd + '/doceasy/plan/all')
+                let response = await req.json();
+
+                if (req.status !== 200) {
+                    this.mostraMensagemFalhaFunction(null, JSON.stringify(response));
+                }
+                else {
+                    this.plan = response;
+                }
+
+                this.plans = response;
+            } catch (error) {
+                this.mostraMensagemFalhaFunction(null,error);
+            }
+            finally {
+                this.carregando = false;
+            }
         },
         async insert() {
-            this.overlay = true;
+            this.carregando = true;
 
             let dados = {};
 
@@ -100,12 +126,39 @@ export default {
             dados.criador = document.getElementById('campoCriador').value;
             dados.descricao = document.getElementById('campoDescricao').value;
 
-            let req = await (await fetch(this.urlBackEnd + '/doceasy/plan/new', { method: "POST", body: JSON.stringify(dados), headers: { "Content-Type": "application/json" } })).json();
+            try {
+                let req = await fetch(this.urlBackEnd + '/doceasy/plan/new', { method: "POST", body: JSON.stringify(dados), headers: { "Content-Type": "application/json" } });
+                let response = await req.json();
+
+                if (req.status == 200) {
+                    this.mostraIndicadorFunction();
+                    this.plans.push(response);
+                }
+                else {
+                    this.mostraMensagemFalhaFunction(null, JSON.stringify(response));
+                }
+            } catch (error) {
+                this.mostraMensagemFalhaFunction(null, error);
+            }
 
             this.dialog = false;
-            this.overlay = false;
-            this.plans.push(req);
-        }
+            this.carregando = false;
+        },
+        mostraIndicadorFunction(titulo, mensagem) {
+            this.mostraIndicador = true;
+
+            this.titulo = titulo ? titulo : 'Sucesso';
+            this.mensagem = mensagem ? mensagem : 'Registro inserido com sucesso!'
+
+            setTimeout(() => {
+                this.mostraIndicador = false;
+            }, 2000);
+        },
+        mostraMensagemFalhaFunction(titulo, mensagem) {
+            this.mostraMensagemFalha = true;
+            this.titulo = titulo ? titulo : 'Falha';
+            this.mensagem = mensagem ? mensagem : 'Não foi possível carregar a mensagem de erro.';
+        },
     },
     mounted() {
         this.loadPlans();

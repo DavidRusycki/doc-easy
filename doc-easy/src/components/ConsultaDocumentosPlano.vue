@@ -1,7 +1,8 @@
 <template>
-    <v-overlay :model-value="overlay" class="align-center justify-center">
-        <v-progress-circular color="green" indeterminate size="64"></v-progress-circular>
-    </v-overlay>
+    <Carregamento :overlay="carregando"></Carregamento>
+    <MensagemModalSucesso v-if="mostraMensagemSucesso" :msg="mensagem" :titulo="titulo"></MensagemModalSucesso>
+    <MensagemModalFalha v-if="mostraMensagemFalha" :msg="mensagem" :titulo="titulo"></MensagemModalFalha>
+    <IndicadorAcao v-if="mostraIndicador" :msg="mensagem" :titulo="titulo" :tipo="tipoIndicador" ></IndicadorAcao>
 
     <v-card class="mx-auto border-radius-none box-shadow-none">
         <v-card-item class="bg-blue-darken-4">
@@ -103,31 +104,38 @@
 
 <script>
 import DragDrop from '@/components/DragDrop.vue';
+import Carregamento from '@/components/Carregamento.vue';
+import MensagemModalSucesso from '@/components/MensagemModalSucesso.vue';
+import MensagemModalFalha from '@/components/MensagemModalFalha.vue';
+import IndicadorAcao from '@/components/IndicadorAcao.vue';
 import router from '@/router';
 
 export default {
     components: {
         'DragDrop': DragDrop,
+        'Carregamento': Carregamento,
+        'MensagemModalSucesso': MensagemModalSucesso,
+        'MensagemModalFalha': MensagemModalFalha,
+        'IndicadorAcao': IndicadorAcao,
     },
     data() {
         return {
-            overlay: true,
+            carregando: true,
             urlBackEnd: process.env.ENDERECO_BACK_END,
             plan: {},
             dialog: false,
             desserts: [],
+            mensagem: '',
+            titulo: '',
+            mostraIndicador: false,
+            tipoIndicador: 'success',
+            mostraMensagemSucesso: false,
+            mostraMensagemFalha: false,
         }
     },
     methods: {
-        teste(numero) {
-            this.dialog = true;
-            console.log(numero);
-            this.desserts[2]['codigo'] = 4;
-            console.log(this.$route);
-        },
         async insert() {
-            this.overlay = true;
-            debugger;
+            this.carregando = true;
 
             let nome = document.getElementById('nome').value;
             let descricaoSimples = document.getElementById('descricaoSimples').value;
@@ -148,14 +156,19 @@ export default {
             formData.append("file", documentUpload[0]);
             formData.append("document", JSON.stringify(bodyJson));
 
-            let req = await fetch(this.urlBackEnd + '/doceasy/document/new', { method: "POST", body: formData });
-
+            let req = await fetch(this.urlBackEnd + '/doceasy/document/new', { method: "POST", body: formData});
             let newDocument = await req.json();
 
-            this.plan.documents.push(newDocument);
+            if (req.status == 200) {
+                this.mostraIndicadorFunction();
+                this.plan.documents.push(newDocument);
+            }
+            else {
+                this.mostraMensagemFalhaFunction(null, JSON.stringify(newDocument));
+            }
 
             this.dialog = false;
-            this.overlay = false;
+            this.carregando = false;
         },
         getDocuments() {
             return window.eu;
@@ -164,13 +177,42 @@ export default {
             localStorage.documents = ['asdf'];
             window.eu = [];
         },
+        mostraIndicadorFunction(titulo, mensagem) {
+            this.mostraIndicador = true;
+
+            this.titulo = titulo ? titulo : 'Sucesso';
+            this.mensagem = mensagem ? mensagem : 'Registro inserido com sucesso!'
+
+            setTimeout(() => {
+                this.mostraIndicador = false;
+            }, 2000);
+        },
+        mostraMensagemFalhaFunction(titulo, mensagem) {
+            this.mostraMensagemFalha = true;
+            this.titulo = titulo ? titulo : 'Falha';
+            this.mensagem = mensagem ? mensagem : 'Não foi possível carregar a mensagem de erro.';
+        },
         async loadTableRegisters() {
-            debugger;
-            this.overlay = true;
-            this.plan = await (await fetch(this.urlBackEnd + '/doceasy/document/'+ this.$route.params.name)).json();
-            this.desserts = this.plan.documents;
-            this.overlay = false;
-        }
+            try {
+                this.carregando = true;
+                let req = await fetch(this.urlBackEnd + '/doceasy/document/'+ this.$route.params.name)
+                let content = await req.json();
+
+                if (req.status !== 200) {
+                    this.mostraMensagemFalhaFunction(null, JSON.stringify(content));
+                }
+                else {
+                    this.plan = content;
+                }
+
+                this.desserts = this.plan.documents;
+            } catch (error) {
+                this.mostraMensagemFalhaFunction(null,error);
+            }
+            finally {
+                this.carregando = false;
+            }
+        },
     },
     mounted() {
         this.limpaLocalStorage();

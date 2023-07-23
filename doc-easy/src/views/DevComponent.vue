@@ -1,36 +1,23 @@
 <template>
-
-
-
-  <v-container class="bg-surface-variant">
-    <v-row no-gutters>
-      <v-col
-        v-for="n in 3"
-        :key="n"
-        cols="12"
-        sm="4"
-      >
-        <v-sheet class="ma-2 pa-2" min-height="268">
-          One of three columns
-        </v-sheet>
-      </v-col>
-    </v-row>
-  </v-container>
-
-
+  <IndicadorAcao :msg="mensagem" :titulo="titulo"></IndicadorAcao>
 </template>
+
 <script >
 
 import DragDrop from '@/components/DragDrop.vue';
+import MensagemModalSucesso from '@/components/MensagemModalSucesso.vue';
+import IndicadorAcao from '@/components/IndicadorAcao.vue';
 
 export default {
-  methods: {
-    teste() {
-      console.log(process.env.ENDERECO_BACK_END);
-    }
+  components: {
+    'MensagemModalSucesso': MensagemModalSucesso,
+    'IndicadorAcao': IndicadorAcao,
   },
-  mounted() {
-    console.log(process.env.ENDERECO_BACK_END);
+  data() {
+    return {
+      mensagem: 'Registro inserido com sucesso!',
+      titulo: 'Sucesso'
+    }
   }
 }
 
