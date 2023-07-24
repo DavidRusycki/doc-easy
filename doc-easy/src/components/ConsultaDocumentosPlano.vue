@@ -173,14 +173,14 @@ export default {
                 let content = null;
                 let req = null;
                 
-                [content, req] = await documentService.deleteDocument(uuid, { method: "POST", body: formData });
+                [content, req] = await documentService.createDocument({ method: "POST", body: formData });
 
                 if (uuid) {
                     this.mostraIndicadorFunction(null, 'Registro alterado com sucesso!');
                 }
                 else {
                     this.mostraIndicadorFunction();
-                    this.plan.documents.push(newDocument);
+                    this.plan.documents.push(content);
                 }
 
             } catch (error) {
@@ -200,10 +200,7 @@ export default {
         },
         async deleteDocument(uuid, indice) {
             try {
-                let content = null;
-                let req = null;
-
-                [content, req] = await documentService.deleteDocument(uuid, { method: "DELETE" });
+                let response = await documentService.deleteDocument(uuid, { method: "DELETE" });
 
                 this.mostraIndicadorFunction(null, 'Registro deletado com sucesso!');
                 this.plan.documents.splice(indice, 1);
