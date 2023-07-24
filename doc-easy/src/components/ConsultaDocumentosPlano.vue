@@ -2,7 +2,7 @@
     <Carregamento :overlay="carregando"></Carregamento>
     <MensagemModalSucesso v-if="mostraMensagemSucesso" :msg="mensagem" :titulo="titulo"></MensagemModalSucesso>
     <MensagemModalFalha v-if="mostraMensagemFalha" :msg="mensagem" :titulo="titulo"></MensagemModalFalha>
-    <IndicadorAcao v-if="mostraIndicador" :msg="mensagem" :titulo="titulo" :tipo="tipoIndicador" ></IndicadorAcao>
+    <IndicadorAcao v-if="mostraIndicador" :msg="mensagem" :titulo="titulo" :tipo="tipoIndicador"></IndicadorAcao>
 
     <v-card class="mx-auto border-radius-none box-shadow-none">
         <v-card-item class="bg-blue-darken-4">
@@ -17,13 +17,13 @@
                         <v-card>
                             <v-card-text>
                                 <form @submit.prevent="submit">
-                                    <v-text-field label="Nome" id="nome"></v-text-field>
+                                    <v-text-field label="Nome" id="nome" v-model="nomeModal"></v-text-field>
 
-                                    <v-text-field label="Descrição Simples" id="descricaoSimples"></v-text-field>
+                                    <v-text-field label="Descrição Simples" id="descricaoSimples" v-model="descricaoModal"></v-text-field>
 
-                                    <v-text-field label="Descrição Completa" id="descricaoCompleta"></v-text-field>
+                                    <v-text-field label="Descrição Completa" id="descricaoCompleta" v-model="descricaoCompletaModal"></v-text-field>
 
-                                    <v-text-field label="Situação" id="situacao"></v-text-field>
+                                    <v-text-field label="Situação" id="situacao" v-model="situacaoModal"></v-text-field>
 
                                     <label>Documento de exemplo:</label>
                                     <DragDrop multiple="false"></DragDrop>
@@ -31,10 +31,10 @@
                             </v-card-text>
                             <v-card-actions>
                                 <v-btn @click="insert()" color="green" class="me-4" type="submit">
-                                    Inserir
+                                    Salvar
                                 </v-btn>
 
-                                <v-btn color="red" @click="dialog = false">
+                                <v-btn color="red" @click="fecharModal()">
                                     Fechar
                                 </v-btn>
                             </v-card-actions>
@@ -79,7 +79,7 @@
                     <td>{{ item.descricao }}</td>
                     <td>{{ item.situacao == 1 ? 'Ativo' : 'Inativo' }}</td>
                     <td>
-                        <v-btn @click="teste(item.codigo)" class="mr-2 mt-1" size="small" variant="tonal"
+                        <v-btn @click="openEditScreen(item)" class="mr-2 mt-1" size="small" variant="tonal"
                             color="yellow-darken-2">
                             <v-icon color="yellow-darken-2" start>
                                 mdi-open-in-new
@@ -88,7 +88,8 @@
                             Editar
                         </v-btn>
 
-                        <v-btn class="mr-2 mt-1" size="small" variant="tonal" color="red">
+                        <v-btn @click="deleteDocument(item.uuid, --indice)" class="mr-2 mt-1" size="small" variant="tonal"
+                            color="red">
                             <v-icon color="red" start>
                                 mdi-close-circle
                             </v-icon>
@@ -131,44 +132,89 @@ export default {
             tipoIndicador: 'success',
             mostraMensagemSucesso: false,
             mostraMensagemFalha: false,
+            uuidModal:'',
+            nomeModal:'',
+            descricaoModal:'',
+            descricaoCompletaModal:'',
+            situacaoModal:''
         }
     },
     methods: {
         async insert() {
-            this.carregando = true;
+            try {
+                this.carregando = true;
 
-            let nome = document.getElementById('nome').value;
-            let descricaoSimples = document.getElementById('descricaoSimples').value;
-            let descricaoCompleta = document.getElementById('descricaoCompleta').value;
-            let situacao = document.getElementById('situacao').value;
+                let nome = document.getElementById('nome').value;
+                let descricaoSimples = document.getElementById('descricaoSimples').value;
+                let descricaoCompleta = document.getElementById('descricaoCompleta').value;
+                let situacao = document.getElementById('situacao').value;
+                let uuid = null;
 
-            let bodyJson = {};
-            bodyJson.idPlano = this.plan.plan.id;
-            bodyJson.nome = nome;
-            bodyJson.descricao = descricaoSimples;
-            bodyJson.descricaoCompleta = descricaoCompleta;
-            bodyJson.situacao = situacao;
+                if (this.uuidModal) {
+                    uuid = this.uuidModal;
+                }
 
-            console.log(this.getDocuments());
-            let documentUpload = this.getDocuments();
+                this.uuidModal = null;
+                this.nomeModal = null;
+                this.descricaoModal = null;
+                this.descricaoCompletaModal = null;
+                this.situacaoModal = null;
 
-            let formData = new FormData();
-            formData.append("file", documentUpload[0]);
-            formData.append("document", JSON.stringify(bodyJson));
+                let bodyJson = {};
+                bodyJson.idPlano = this.plan.plan.id;
+                bodyJson.nome = nome;
+                bodyJson.descricao = descricaoSimples;
+                bodyJson.descricaoCompleta = descricaoCompleta;
+                bodyJson.situacao = situacao;
+                bodyJson.uuid = uuid;
 
-            let req = await fetch(this.urlBackEnd + '/doceasy/document/new', { method: "POST", body: formData});
-            let newDocument = await req.json();
+                let documentUpload = this.getDocuments();
 
-            if (req.status == 200) {
-                this.mostraIndicadorFunction();
-                this.plan.documents.push(newDocument);
+                let formData = new FormData();
+                if (documentUpload.length > 0) {
+                    formData.append("file", documentUpload[0]);
+                }
+                formData.append("document", JSON.stringify(bodyJson));
+
+                let req = await fetch(this.urlBackEnd + '/doceasy/document/new', { method: "POST", body: formData });
+                let newDocument = await req.json();
+
+                if (req.status == 200) {
+                    if (uuid) {
+                        this.mostraIndicadorFunction(null, 'Registro alterado com sucesso!');
+                    }
+                    else {
+                        this.mostraIndicadorFunction();
+                        this.plan.documents.push(newDocument);
+                    }
+                }
+                else {
+                    this.mostraMensagemFalhaFunction(null, JSON.stringify(newDocument));
+                }
+            } catch (error) {
+                this.mostraMensagemFalhaFunction(null, error);
             }
-            else {
-                this.mostraMensagemFalhaFunction(null, JSON.stringify(newDocument));
+            finally{
+                this.dialog = false;
+                this.carregando = false;
             }
+        },
+        async deleteDocument(uuid, indice) {
+            try {
+                let req = await fetch(this.urlBackEnd + '/doceasy/document/delete/' + uuid, {method: "DELETE"});
+                
+                if (req.status == 200) {
+                    this.mostraIndicadorFunction(null, 'Registro deletado com sucesso!');
+                    this.plan.documents.splice(indice, 1);
+                }
+                else {
+                    let newDocument = await req.json();
+                    this.mostraMensagemFalhaFunction(null, JSON.stringify(newDocument));
+                }
 
-            this.dialog = false;
-            this.carregando = false;
+            } catch (error) {
+                this.mostraMensagemFalhaFunction(null, error);
+            }
         },
         getDocuments() {
             return window.eu;
@@ -192,10 +238,28 @@ export default {
             this.titulo = titulo ? titulo : 'Falha';
             this.mensagem = mensagem ? mensagem : 'Não foi possível carregar a mensagem de erro.';
         },
+        openEditScreen(documentItem) {
+            this.uuidModal = documentItem.uuid;
+            this.nomeModal = documentItem.nome;
+            this.descricaoModal = documentItem.descricao;
+            this.descricaoCompletaModal = documentItem.descricaoCompleta;
+            this.situacaoModal = documentItem.situacao;
+            
+            this.dialog = true;
+        },
+        fecharModal() {
+            this.uuidModal = null;
+            this.nomeModal = null;
+            this.descricaoModal = null;
+            this.descricaoCompletaModal = null;
+            this.situacaoModal = null;
+
+            this.dialog = false;
+        },
         async loadTableRegisters() {
             try {
                 this.carregando = true;
-                let req = await fetch(this.urlBackEnd + '/doceasy/document/'+ this.$route.params.name)
+                let req = await fetch(this.urlBackEnd + '/doceasy/document/' + this.$route.params.name)
                 let content = await req.json();
 
                 if (req.status !== 200) {
@@ -207,7 +271,7 @@ export default {
 
                 this.desserts = this.plan.documents;
             } catch (error) {
-                this.mostraMensagemFalhaFunction(null,error);
+                this.mostraMensagemFalhaFunction(null, error);
             }
             finally {
                 this.carregando = false;
