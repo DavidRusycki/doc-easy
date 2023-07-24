@@ -73,8 +73,12 @@ import AbaLateral from '@/components/AbaLateral.vue'
 import Carregamento from '@/components/Carregamento.vue'
 import MensagemModalFalha from '@/components/MensagemModalFalha.vue';
 import IndicadorAcao from '@/components/IndicadorAcao.vue';
+import ComponenteBase from '@/components/ComponenteBase.vue';
+import planService from '@/services/planService.js'
+
 
 export default {
+    extends: ComponenteBase,
     components: {
         'AbaLateral': AbaLateral,
         'Carregamento': Carregamento,
@@ -85,31 +89,20 @@ export default {
         return {
             carregando: false,
             dialog: false,
-            urlBackEnd: process.env.ENDERECO_BACK_END,
             plans: [],
-            mensagem: '',
-            titulo: '',
-            mostraIndicador: false,
-            tipoIndicador: 'success',
-            mostraMensagemFalha: false,
         }
     },
     methods: {
         async loadPlans() {
-
             try {
                 this.carregando = true;
-                let req = await fetch(this.urlBackEnd + '/doceasy/plan/all')
-                let response = await req.json();
+                let responseObject = null;
+                let responseContent = null;
 
-                if (req.status !== 200) {
-                    this.mostraMensagemFalhaFunction(null, JSON.stringify(response));
-                }
-                else {
-                    this.plan = response;
-                }
+                [responseContent, responseObject] = await planService.loadPlans();
 
-                this.plans = response;
+                this.plan = responseContent;
+                this.plans = responseContent;
             } catch (error) {
                 this.mostraMensagemFalhaFunction(null,error);
             }
@@ -127,37 +120,20 @@ export default {
             dados.descricao = document.getElementById('campoDescricao').value;
 
             try {
-                let req = await fetch(this.urlBackEnd + '/doceasy/plan/new', { method: "POST", body: JSON.stringify(dados), headers: { "Content-Type": "application/json" } });
-                let response = await req.json();
+                let req = null;
+                let response = null;
 
-                if (req.status == 200) {
-                    this.mostraIndicadorFunction();
-                    this.plans.push(response);
-                }
-                else {
-                    this.mostraMensagemFalhaFunction(null, JSON.stringify(response));
-                }
+                [response, req] = await planService.insert({ method: "POST", body: JSON.stringify(dados), headers: { "Content-Type": "application/json" } });
+
+                this.mostraIndicadorFunction();
+                this.plans.push(response);
+
             } catch (error) {
                 this.mostraMensagemFalhaFunction(null, error);
             }
 
             this.dialog = false;
             this.carregando = false;
-        },
-        mostraIndicadorFunction(titulo, mensagem) {
-            this.mostraIndicador = true;
-
-            this.titulo = titulo ? titulo : 'Sucesso';
-            this.mensagem = mensagem ? mensagem : 'Registro inserido com sucesso!'
-
-            setTimeout(() => {
-                this.mostraIndicador = false;
-            }, 2000);
-        },
-        mostraMensagemFalhaFunction(titulo, mensagem) {
-            this.mostraMensagemFalha = true;
-            this.titulo = titulo ? titulo : 'Falha';
-            this.mensagem = mensagem ? mensagem : 'Não foi possível carregar a mensagem de erro.';
         },
     },
     mounted() {

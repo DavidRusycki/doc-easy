@@ -19,9 +19,11 @@
                                 <form @submit.prevent="submit">
                                     <v-text-field label="Nome" id="nome" v-model="nomeModal"></v-text-field>
 
-                                    <v-text-field label="Descrição Simples" id="descricaoSimples" v-model="descricaoModal"></v-text-field>
+                                    <v-text-field label="Descrição Simples" id="descricaoSimples"
+                                        v-model="descricaoModal"></v-text-field>
 
-                                    <v-text-field label="Descrição Completa" id="descricaoCompleta" v-model="descricaoCompletaModal"></v-text-field>
+                                    <v-text-field label="Descrição Completa" id="descricaoCompleta"
+                                        v-model="descricaoCompletaModal"></v-text-field>
 
                                     <v-text-field label="Situação" id="situacao" v-model="situacaoModal"></v-text-field>
 
@@ -109,9 +111,12 @@ import Carregamento from '@/components/Carregamento.vue';
 import MensagemModalSucesso from '@/components/MensagemModalSucesso.vue';
 import MensagemModalFalha from '@/components/MensagemModalFalha.vue';
 import IndicadorAcao from '@/components/IndicadorAcao.vue';
+import ComponenteBase from '@/components/ComponenteBase.vue';
+import documentService from '@/services/documentService.js'
 import router from '@/router';
 
 export default {
+    extends: ComponenteBase,
     components: {
         'DragDrop': DragDrop,
         'Carregamento': Carregamento,
@@ -122,21 +127,14 @@ export default {
     data() {
         return {
             carregando: true,
-            urlBackEnd: process.env.ENDERECO_BACK_END,
             plan: {},
             dialog: false,
             desserts: [],
-            mensagem: '',
-            titulo: '',
-            mostraIndicador: false,
-            tipoIndicador: 'success',
-            mostraMensagemSucesso: false,
-            mostraMensagemFalha: false,
-            uuidModal:'',
-            nomeModal:'',
-            descricaoModal:'',
-            descricaoCompletaModal:'',
-            situacaoModal:''
+            uuidModal: '',
+            nomeModal: '',
+            descricaoModal: '',
+            descricaoCompletaModal: '',
+            situacaoModal: ''
         }
     },
     methods: {
@@ -154,11 +152,7 @@ export default {
                     uuid = this.uuidModal;
                 }
 
-                this.uuidModal = null;
-                this.nomeModal = null;
-                this.descricaoModal = null;
-                this.descricaoCompletaModal = null;
-                this.situacaoModal = null;
+                this.clearData();
 
                 let bodyJson = {};
                 bodyJson.idPlano = this.plan.plan.id;
@@ -176,41 +170,43 @@ export default {
                 }
                 formData.append("document", JSON.stringify(bodyJson));
 
-                let req = await fetch(this.urlBackEnd + '/doceasy/document/new', { method: "POST", body: formData });
-                let newDocument = await req.json();
+                let content = null;
+                let req = null;
+                
+                [content, req] = await documentService.deleteDocument(uuid, { method: "POST", body: formData });
 
-                if (req.status == 200) {
-                    if (uuid) {
-                        this.mostraIndicadorFunction(null, 'Registro alterado com sucesso!');
-                    }
-                    else {
-                        this.mostraIndicadorFunction();
-                        this.plan.documents.push(newDocument);
-                    }
+                if (uuid) {
+                    this.mostraIndicadorFunction(null, 'Registro alterado com sucesso!');
                 }
                 else {
-                    this.mostraMensagemFalhaFunction(null, JSON.stringify(newDocument));
+                    this.mostraIndicadorFunction();
+                    this.plan.documents.push(newDocument);
                 }
+
             } catch (error) {
                 this.mostraMensagemFalhaFunction(null, error);
             }
-            finally{
+            finally {
                 this.dialog = false;
                 this.carregando = false;
             }
         },
+        clearData() {
+            this.uuidModal = null;
+            this.nomeModal = null;
+            this.descricaoModal = null;
+            this.descricaoCompletaModal = null;
+            this.situacaoModal = null;
+        },
         async deleteDocument(uuid, indice) {
             try {
-                let req = await fetch(this.urlBackEnd + '/doceasy/document/delete/' + uuid, {method: "DELETE"});
-                
-                if (req.status == 200) {
-                    this.mostraIndicadorFunction(null, 'Registro deletado com sucesso!');
-                    this.plan.documents.splice(indice, 1);
-                }
-                else {
-                    let newDocument = await req.json();
-                    this.mostraMensagemFalhaFunction(null, JSON.stringify(newDocument));
-                }
+                let content = null;
+                let req = null;
+
+                [content, req] = await documentService.deleteDocument(uuid, { method: "DELETE" });
+
+                this.mostraIndicadorFunction(null, 'Registro deletado com sucesso!');
+                this.plan.documents.splice(indice, 1);
 
             } catch (error) {
                 this.mostraMensagemFalhaFunction(null, error);
@@ -223,28 +219,13 @@ export default {
             localStorage.documents = ['asdf'];
             window.eu = [];
         },
-        mostraIndicadorFunction(titulo, mensagem) {
-            this.mostraIndicador = true;
-
-            this.titulo = titulo ? titulo : 'Sucesso';
-            this.mensagem = mensagem ? mensagem : 'Registro inserido com sucesso!'
-
-            setTimeout(() => {
-                this.mostraIndicador = false;
-            }, 2000);
-        },
-        mostraMensagemFalhaFunction(titulo, mensagem) {
-            this.mostraMensagemFalha = true;
-            this.titulo = titulo ? titulo : 'Falha';
-            this.mensagem = mensagem ? mensagem : 'Não foi possível carregar a mensagem de erro.';
-        },
         openEditScreen(documentItem) {
             this.uuidModal = documentItem.uuid;
             this.nomeModal = documentItem.nome;
             this.descricaoModal = documentItem.descricao;
             this.descricaoCompletaModal = documentItem.descricaoCompleta;
             this.situacaoModal = documentItem.situacao;
-            
+
             this.dialog = true;
         },
         fecharModal() {
@@ -259,16 +240,13 @@ export default {
         async loadTableRegisters() {
             try {
                 this.carregando = true;
-                let req = await fetch(this.urlBackEnd + '/doceasy/document/' + this.$route.params.name)
-                let content = await req.json();
 
-                if (req.status !== 200) {
-                    this.mostraMensagemFalhaFunction(null, JSON.stringify(content));
-                }
-                else {
-                    this.plan = content;
-                }
+                let content = null;
+                let req = null;
 
+                [content, req] = await documentService.loadDocuments(this.$route.params.name);
+
+                this.plan = content;
                 this.desserts = this.plan.documents;
             } catch (error) {
                 this.mostraMensagemFalhaFunction(null, error);
