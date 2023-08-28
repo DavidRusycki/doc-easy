@@ -4,7 +4,7 @@
       <TimeLine></TimeLine>
     </div>
     <div class="area-card">
-      <v-card class="central" title="Card title" text="LOREN IPM SO LUN" width="900" height="800" >
+      <v-card class="central" title="Card title" text="LOREN IPM SO LUN" width="1500" height="800" >
         <DragDrop multiple="true"></DragDrop>
       </v-card>
     </div>
