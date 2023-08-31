@@ -1,17 +1,25 @@
 <template>
   <div class="tudo">
     <div class="conteudo">
-      <TimeLine></TimeLine>
+      <TimeLine @update-card="updateCard"></TimeLine>
     </div>
     <div class="area-card">
-      <v-card class="central" title="Card title" text="LOREN IPM SO LUN" width="1500" height="800" >
-        <DragDrop multiple="true"></DragDrop>
+      <v-card :class="{'central':true, 'inicial': !iniciado}" :title="cardTitle" :text="cardContent" width="1500" height="800" >
+        <DragDrop v-if="iniciado" multiple="true"></DragDrop>
+          <span  v-if="!iniciado">Clique no primeiro documento</span>
       </v-card>
     </div>
   </div>
 </template>
 
 <style>
+
+.inicial {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
 .tudo {
   display: flex;
   width: 100%;
@@ -34,6 +42,18 @@ export default {
   components: {
     TimeLine: TimeLine,
     DragDrop: DragDrop
+  },
+  data: () => ({
+    cardTitle: '',
+    cardContent: '',
+    iniciado: false
+  }),
+  methods: {
+    updateCard(card) {
+      this.iniciado = true;
+      this.cardContent = card.content;
+      this.cardTitle = card.tittle;
+    }
   }
 }
 </script>
