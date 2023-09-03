@@ -7,12 +7,22 @@
       <v-card :class="{'central':true, 'inicial': !iniciado}" :title="cardTitle" :text="cardContent" width="1500" height="800" >
         <DragDrop v-if="iniciado" multiple="true"></DragDrop>
           <span  v-if="!iniciado">Clique no primeiro documento</span>
+          <v-card-actions v-if="finalizar" class="finalizar">
+            <v-btn color="green" variant="flat">
+              Finalizar
+            </v-btn>
+          </v-card-actions>
       </v-card>
     </div>
   </div>
 </template>
 
 <style>
+
+.finalizar{
+  display: flex;
+  flex-direction: row-reverse;
+}
 
 .inicial {
   display: flex;
@@ -46,13 +56,22 @@ export default {
   data: () => ({
     cardTitle: '',
     cardContent: '',
-    iniciado: false
+    iniciado: false,
+    finalizar: false
   }),
   methods: {
     updateCard(card) {
       this.iniciado = true;
       this.cardContent = card.content;
       this.cardTitle = card.tittle;
+
+      if (card.finalizar) {
+        this.finalizar = true;
+      }
+      else {
+        this.finalizar = false;
+      }
+
     }
   }
 }

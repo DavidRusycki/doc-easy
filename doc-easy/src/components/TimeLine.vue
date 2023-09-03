@@ -55,7 +55,8 @@ export default {
         color: 'indigo-lighten-2',
         icon: 'mdi-layers-triple',
         tittle: 'Documento 5',
-        content: 'açsdkçlfjasdfaçlksdflkaslk teste 5'
+        content: 'açsdkçlfjasdfaçlksdflkaslk teste 5',
+        finalizar: true
       },
     ],
   }),
