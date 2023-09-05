@@ -28,7 +28,7 @@
                         name="input-file" type="file" />
                 </label>
             </v-card>
-        </div>
+        </div> 
     </div>
 </template>
 
@@ -37,6 +37,8 @@
 export default {
     props: {
         multiple: true,
+        name: '',
+        externalFiles: {}
     },
     data() {
         return {
@@ -144,12 +146,28 @@ export default {
         },
         updateLocalStorage(files) {
             //Inicia a localStorage para os documentos
+
+            this.initLoadStorage();
+
+            window.eu[this.name] = [];
+            window.eu[this.name].push(...files);
+        },
+        initLoadStorage() {
             if (typeof window.eu == 'undefined') {
-                window.eu = [];
+                window.eu = {};
             }
-            window.eu = [];
-            window.eu.push(...files);
+            if (typeof window.eu[this.name] == 'undefined') {
+                window.eu[this.name] = [];
+            }
+        },
+        getFromLocalStorage() {
+            return window.eu[this.name];
         }
+        
+    },
+    mounted() {
+        this.initLoadStorage();
+        this.mountFile(this.getFromLocalStorage());
     }
 }
 

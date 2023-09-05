@@ -4,8 +4,8 @@
       <TimeLine @update-card="updateCard"></TimeLine>
     </div>
     <div class="area-card">
-      <v-card :class="{'central':true, 'inicial': !iniciado}" :title="cardTitle" :text="cardContent" width="1500" height="800" >
-        <DragDrop v-if="iniciado" multiple="true"></DragDrop>
+      <v-card :key="reset" :class="{'central':true, 'inicial': !iniciado}" :title="cardTitle" :text="cardContent" width="1500" height="800" >
+        <DragDrop v-if="iniciado" multiple="true" :name="this.nameDrag"></DragDrop>
           <span  v-if="!iniciado">Clique no primeiro documento</span>
           <v-card-actions v-if="finalizar" class="finalizar">
             <v-btn color="green" variant="flat">
@@ -57,13 +57,18 @@ export default {
     cardTitle: '',
     cardContent: '',
     iniciado: false,
-    finalizar: false
+    finalizar: false,
+    nameDrag: '',
+    reset: 0
   }),
   methods: {
-    updateCard(card) {
+    async updateCard(card) {
+      this.reset += 1;
       this.iniciado = true;
+
       this.cardContent = card.content;
       this.cardTitle = card.tittle;
+      this.nameDrag = card.nameDrag;
 
       if (card.finalizar) {
         this.finalizar = true;

@@ -31,30 +31,35 @@ export default {
         color: 'red-lighten-2',
         icon: 'mdi-star',
         tittle: 'Documento 1',
+        nameDrag: 'Documento1',
         content: 'açlksdfasdfasdflkaslk teste 1'
       },
       {
         color: 'purple-lighten-2',
         icon: 'mdi-book-variant',
         tittle: 'Documento 2',
+        nameDrag: 'Documento2',
         content: 'açlksdfasdfasdflkaslk teste 2'
       },
       {
         color: 'green-lighten-1',
         icon: 'mdi-airballoon',
         tittle: 'Documento 3',
+        nameDrag: 'Documento3',
         content: 'açlksdfasdfasdflkaslk teste 3'
       },
       {
         color: 'indigo-lighten-2',
         icon: 'mdi-layers-triple',
         tittle: 'Documento 4',
+        nameDrag: 'Documento4',
         content: 'açlksdflkaasdfasdfslk teste 4'
       },
       {
         color: 'indigo-lighten-2',
         icon: 'mdi-layers-triple',
         tittle: 'Documento 5',
+        nameDrag: 'Documento5',
         content: 'açsdkçlfjasdfaçlksdflkaslk teste 5',
         finalizar: true
       },
