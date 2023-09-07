@@ -1,4 +1,8 @@
 <template>
+  <Carregamento :overlay="carregando"></Carregamento>
+  <MensagemModalSucesso v-if="mostraMensagemSucesso" :msg="mensagem" :titulo="titulo"></MensagemModalSucesso>
+  <MensagemModalFalha v-if="mostraMensagemFalha" :msg="mensagem" :titulo="titulo"></MensagemModalFalha>
+
   <div>
 
     <v-timeline align="start">
@@ -7,7 +11,7 @@
       </v-timeline-item>
     </v-timeline>
 
-    <div class="contador">{{ selecao+1 }} de {{ items.length }}</div>
+    <div class="contador">{{ selecao + 1 }} de {{ items.length }}</div>
 
   </div>
 </template>
@@ -16,55 +20,32 @@
 .contador {
   text-align: center;
 }
+
 .clicavel {
   cursor: pointer;
 }
 </style>
 
 <script>
-export default {
 
+import Carregamento from '@/components/Carregamento.vue';
+import MensagemModalSucesso from '@/components/MensagemModalSucesso.vue';
+import MensagemModalFalha from '@/components/MensagemModalFalha.vue';
+import executionService from '@/services/executionService.js'
+import ComponenteBase from '@/components/ComponenteBase.vue';
+
+export default {
+  extends: ComponenteBase,
   data: () => ({
+    carregando: true,
     selecao: -1,
-    items: [
-      {
-        color: 'red-lighten-2',
-        icon: 'mdi-star',
-        tittle: 'Documento 1',
-        nameDrag: 'Documento1',
-        content: 'açlksdfasdfasdflkaslk teste 1'
-      },
-      {
-        color: 'purple-lighten-2',
-        icon: 'mdi-book-variant',
-        tittle: 'Documento 2',
-        nameDrag: 'Documento2',
-        content: 'açlksdfasdfasdflkaslk teste 2'
-      },
-      {
-        color: 'green-lighten-1',
-        icon: 'mdi-airballoon',
-        tittle: 'Documento 3',
-        nameDrag: 'Documento3',
-        content: 'açlksdfasdfasdflkaslk teste 3'
-      },
-      {
-        color: 'indigo-lighten-2',
-        icon: 'mdi-layers-triple',
-        tittle: 'Documento 4',
-        nameDrag: 'Documento4',
-        content: 'açlksdflkaasdfasdfslk teste 4'
-      },
-      {
-        color: 'indigo-lighten-2',
-        icon: 'mdi-layers-triple',
-        tittle: 'Documento 5',
-        nameDrag: 'Documento5',
-        content: 'açsdkçlfjasdfaçlksdflkaslk teste 5',
-        finalizar: true
-      },
-    ],
+    items: [],
   }),
+  components: {
+      'Carregamento': Carregamento,
+      'MensagemModalSucesso': MensagemModalSucesso,
+      'MensagemModalFalha': MensagemModalFalha,
+  },
   methods: {
     onClickDocument(indice) {
       this.updateSelecao(indice);
@@ -77,6 +58,41 @@ export default {
     },
     getColor(indice) {
       return this.isSelected(indice) ? 'green' : 'orange';
+    },
+    loadDocumentsStructure(content) {
+
+      if (typeof content.documents != 'undefined') {
+        for (let key in content.documents) {
+
+          let document = {};
+
+          document.color = 'indigo-lighten-2';
+          document.icon = 'mdi-layers-triple';
+          document.tittle = content.documents[key]['nome'];
+          document.nameDrag = content.documents[key]['uuid'];
+          document.content = content.documents[key]['descricaoCompleta'];
+          document.finalizar = false;
+
+          this.items.push(document);
+        }
+      }
+
+    }
+  },
+  async mounted() {
+    try {
+      this.carregando = true;
+      let json = null;
+      let response = null;
+      [json, response] = await executionService.loadDocumentsFromPlan('Uniedu');
+      this.loadDocumentsStructure(json);
+      this.carregando = false;
+    } catch (error) {
+      console.log(error);
+      this.mostraMensagemFalhaFunction(null, 'Não foi possível carregar os documentos. Tente novamente mais tarde.');
+    }
+    finally {
+      this.carregando = false;
     }
   }
 }
