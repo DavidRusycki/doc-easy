@@ -8,7 +8,7 @@
         <DragDrop v-if="iniciado" multiple="true" :name="this.nameDrag"></DragDrop>
           <span  v-if="!iniciado">Clique no primeiro documento</span>
           <v-card-actions v-if="finalizar" class="finalizar">
-            <v-btn color="green" variant="flat">
+            <v-btn @click="finish()" color="green" variant="flat">
               Finalizar
             </v-btn>
           </v-card-actions>
@@ -47,6 +47,7 @@
 <script>
 import TimeLine from '@/components/TimeLine.vue';
 import DragDrop from '@/components/DragDrop.vue';
+import executionService from '@/services/executionService.js'
 
 export default {
   components: {
@@ -76,6 +77,14 @@ export default {
       else {
         this.finalizar = false;
       }
+    },
+    finish() {
+      
+      
+
+      let documents = {};
+
+      executionService.sendDocuments(documents);
 
     }
   }
