@@ -71,7 +71,13 @@ export default {
           document.tittle = content.documents[key]['nome'];
           document.nameDrag = content.documents[key]['uuid'];
           document.content = content.documents[key]['descricaoCompleta'];
-          document.finalizar = false;
+
+          if (content.documents.length-1 == key) {
+            document.finalizar = true;
+          }
+          else {
+            document.finalizar = false;
+          }
 
           this.items.push(document);
         }

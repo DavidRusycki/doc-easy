@@ -71,7 +71,6 @@ export default {
                 this.files = [];
                 this.files.push(...newFiles);
 
-                console.log(this.files);
                 let uploadInput = document.getElementById('input-file');
                 uploadInput.value = null
             }
