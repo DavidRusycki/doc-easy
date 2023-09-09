@@ -53,7 +53,7 @@ export default {
         if (this.lettersToAdd.length == 0) {
           clearInterval(id);
         }
-      }, 20);
+      }, 30);
     }
   },
   mounted() {

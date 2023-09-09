@@ -78,14 +78,41 @@ export default {
         this.finalizar = false;
       }
     },
-    finish() {
-      
-      
+    async finish() {
+      debugger;
+      window.links = [];
 
-      let documents = {};
+      let documents = this.getDocumentsFromLocal();
 
-      executionService.sendDocuments(documents);
+      for (let key in documents) {
+        let uuid = await this.sendDocuments(documents[key]);
+      }
 
+      window.links.push(this.makeLink(uuid));
+    },
+    async sendDocuments(documents) {
+
+      let formData = new FormData();
+      if (documents.length > 0) {
+        for (const key in documents) {
+          formData.append("files", documents[key]);
+        }
+      }
+
+      let uuid = await executionService.sendDocuments({ method: "POST", body: formData });
+
+      return uuid;
+    },
+    getDocumentsFromLocal() {
+      return window.eu;
+    },
+    makeLink(uuid) {
+
+      let baseUrl = process.env.ENDERECO_BACK_END_MERGE;
+
+      let link = baseUrl + "/download/" + uuid;
+
+      return link;
     }
   }
 }

@@ -1,6 +1,6 @@
 <template>
     <div class="floating">
-        <v-alert width="400" closable :title="titulo" :text="msg" :type="tipo"></v-alert>
+        <v-alert width="400" closable :title="titulo" :text="msg" :type="tipo" variant="tonal" ></v-alert>
     </div>
 </template>
 
