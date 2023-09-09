@@ -23,6 +23,7 @@ export default defineConfig({
   define: { 'process.env': {
 
     'ENDERECO_BACK_END':'http://localhost:8080',
+    'ENDERECO_BACK_END_MERGE':'http://localhost:9090',
 
   } },
   resolve: {
