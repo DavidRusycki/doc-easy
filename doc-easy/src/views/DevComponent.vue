@@ -85,10 +85,13 @@ export default {
       let documents = this.getDocumentsFromLocal();
 
       for (let key in documents) {
-        let uuid = await this.sendDocuments(documents[key]);
+        if (documents[key].length > 0) {
+          let uuid = await this.sendDocuments(documents[key]);
+          window.links.push(this.makeLink(uuid));
+        }
       }
 
-      window.links.push(this.makeLink(uuid));
+      this.$router.push('Download');
     },
     async sendDocuments(documents) {
 
@@ -100,6 +103,8 @@ export default {
       }
 
       let uuid = await executionService.sendDocuments({ method: "POST", body: formData });
+
+      uuid = uuid[0].uuid;
 
       return uuid;
     },

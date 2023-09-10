@@ -7,6 +7,6 @@ export default {
     return api('/doceasy/document/' + routeName);
   },
   sendDocuments(documents) {
-    return apiMerge('/doceasy/document/', documents);
+    return apiMerge('/process', documents);
   }
 };

@@ -22,8 +22,8 @@ export default defineConfig({
   ],
   define: { 'process.env': {
 
-    'ENDERECO_BACK_END':'http://192.168.1.7:8080',
-    'ENDERECO_BACK_END_MERGE':'http://192.168.1.7:8081',
+    'ENDERECO_BACK_END':'http://localhost:8080',
+    'ENDERECO_BACK_END_MERGE':'http://localhost:8081',
 
   } },
   resolve: {
