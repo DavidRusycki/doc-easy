@@ -4,9 +4,7 @@
     Os documentos estão em processamento e estarão disponíveis nos links abaixo:
 
     <ul>
-      <li>asdf</li>
-      <li>asdf</li>
-      <li>asdf</li>
+      <li v-for="(link, i) in links" :key="i"> <a target="_blank" :href="link"> {{ link }}</a></li>
     </ul>
     
   </div>
@@ -18,7 +16,19 @@
 
 <script>
 export default {
-
+  data() {
+    return {
+      links: []
+    }
+  },
+  methods: {
+    loadLinksFromStorage() {
+      this.links = window.links;
+    }
+  },
+  mounted() {
+    this.loadLinksFromStorage();
+  }
 }
 </script>
 
