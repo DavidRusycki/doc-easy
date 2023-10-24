@@ -1,0 +1,130 @@
+version: '3.9'
+
+networks:
+  doceasy:
+    external: false
+
+services:
+  postgres:
+    container_name: postgres
+    image: postgres:latest
+    ports:
+      - 5858:5432
+    environment:
+      - POSTGRES_PASSWORD=postgres
+    networks:
+      - doceasy
+
+  rabbit:
+    container_name: rabbit
+    image: rabbitmq:3.12-management
+    ports:
+      - 15672:15672
+      - 5672:5672
+    environment:
+      - RABBITMQ_DEFAULT_USER=guest
+      - RABBITMQ_DEFAULT_PASS=guest
+    networks:
+      - doceasy
+
+  metamorphic-pdf:
+    container_name: metamorphic-pdf
+    image: openjdk:17
+    environment:
+      - PROFILE=docker
+    volumes: 
+      - ./build/metarmophic.pdf-1.0.jar:/home/dev/metarmophic.pdf-1.0.jar
+    command: "java -jar /home/dev/metarmophic.pdf-1.0.jar"
+    ports:
+      - 8080:8080
+    networks:
+      - doceasy
+
+  doceasy-middler:
+    container_name: doceasy-middler
+    image: openjdk:17
+    environment:
+      - PROFILE=docker
+    volumes: 
+      - ./build/doc-easy-middler-1.0.jar:/home/dev/doc-easy-middler-1.0.jar
+    command: "java -jar /home/dev/doc-easy-middler-1.0.jar"
+    ports:
+      - 8081:8081
+    networks:
+      - doceasy
+
+  doceasy-worker:
+    container_name: doceasy-worker
+    image: openjdk:17
+    environment:
+      - PROFILE=docker
+    volumes: 
+      - ./build/doc-easy-worker-1.0.jar:/home/dev/doc-easy-worker-1.0.jar
+    command: "java -jar /home/dev/doc-easy-worker-1.0.jar"
+    ports:
+      - 8282:8282
+    networks:
+      - doceasy
+
+  doceasy-back-end:
+    container_name: doceasy-back-end
+    image: openjdk:17
+    environment:
+      - PROFILE=docker
+    volumes: 
+      - ./build/doc-easy-back-end-1.0.jar:/home/dev/doc-easy-back-end-1.0.jar
+    command: "java -jar /home/dev/doc-easy-back-end-1.0.jar"
+    ports:
+      - 8083:8083
+    networks:
+      - doceasy
+
+  loki:
+    container_name: loki
+    image: grafana/loki:2.8.2
+    ports:
+      - 3100:3100
+    command: -config.file=/etc/loki/local-config.yaml
+    networks:
+      - doceasy
+
+  grafana:
+    container_name: grafana
+    image: grafana/grafana:latest
+    ports:
+      - 3001:3000
+    environment:
+      - GF_PATHS_PROVISIONING=/etc/grafana/provisioning
+      - GF_AUTH_ANONYMOUS_ENABLED=true
+      - GF_AUTH_ANONYMOUS_ORG_ROLE=Admin
+    entrypoint:
+      - sh
+      - -euc
+      - |
+        mkdir -p /etc/grafana/provisioning/datasources
+        cat <<EOF > /etc/grafana/provisioning/datasources/ds.yaml
+        apiVersion: 1
+        datasources:
+        - name: Loki
+          type: loki
+          access: proxy
+          orgId: 1
+          url: http://loki:3100
+          basicAuth: false
+          isDefault: true
+          version: 1
+          editable: false
+        EOF
+        /run.sh    
+    networks:
+      - doceasy
+
+  prometheus:
+    container_name: prometheus
+    image: prom/prometheus:v2.44.0
+    ports:
+      - 9090:9090
+    volumes:
+      - ./assets/prometheus.yml:/etc/prometheus/prometheus.yml
+    networks:
+      - doceasy
