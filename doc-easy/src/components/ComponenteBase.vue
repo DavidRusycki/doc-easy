@@ -15,7 +15,9 @@ export default {
         mostraMensagemFalhaFunction(titulo, mensagem) {
             this.mostraMensagemFalha = true;
             this.titulo = titulo ? titulo : 'Falha';
-            this.mensagem = mensagem ? mensagem : 'Não foi possível carregar a mensagem de erro.';
+            this.mensagem = 'Não foi possível realizar a operação';
+            let newMessage = mensagem ? mensagem : 'Não foi possível carregar a mensagem de erro.';
+            this.logger(newMessage);
         },
         mostraIndicadorFunction(titulo, mensagem) {
             this.mostraIndicador = true;
@@ -27,6 +29,14 @@ export default {
                 this.mostraIndicador = false;
             }, 2000);
         },
+        logger(message) {
+            console.log(message);
+        },
+        enter(e) {
+            if (e.key === "Enter") {
+                this.insert();
+            }
+        }
     }
 }
 

@@ -16,10 +16,10 @@
                 <template v-slot:append>
                     <v-btn color="green" icon="mdi-plus" size="small" class="mr-2">
                         <v-icon size="large" icon="mdi-plus"></v-icon>
-                        <v-dialog persistent v-model="dialog" activator="parent">
+                        <v-dialog persistent v-model="dialog" activator="parent" width="50vw">
                             <v-card>
                                 <v-card-text>
-                                    <form @submit.prevent="submit">
+                                    <form @submit.prevent="submit" @keypress="enter($event)">
                                         <v-text-field label="Nome" id="campoNome"></v-text-field>
 
                                         <v-text-field label="Criador" id="campoCriador"></v-text-field>
@@ -45,8 +45,8 @@
 
             <v-container>
                 <v-row>
-                    <v-col v-for="plan in plans" :key="n" cols="12" sm="4">
-                        <v-card class="mx-auto mt-4 px-5 pt-5" min-height="200" color="#385F73" theme="dark">
+                    <v-col v-for="(plan, indice) in plans" :key="n" cols="12" sm="4">
+                        <v-card class="mx-auto mt-4 px-5 pt-5" min-height="200" color="#587d8f" theme="dark">
                             <v-card-title class="text-h5">
                                 {{ plan.nome }}
                             </v-card-title>
@@ -54,6 +54,14 @@
                             <v-card-subtitle class="pt-5">
                                 {{ plan.criador }}
                             </v-card-subtitle>
+
+                            <v-card-text>
+                                <div class="div-url">
+                                    <!-- <v-text-field id="campoUrl" disabled>{{this.url + '/' + plan.nome}}</v-text-field>  -->
+                                    <span :id="'campoUrl'+indice">{{this.url + '/' + plan.nome}}</span>
+                                    <v-btn @click="copyUrl(indice)" variant="text" class="ml-2" icon="mdi-content-copy"></v-btn>
+                                </div>
+                            </v-card-text>
 
                             <v-card-actions>
                                 <v-btn color="blue-lighten-2" variant="text" :href="'/admin/' + plan.nome">
@@ -90,9 +98,17 @@ export default {
             carregando: false,
             dialog: false,
             plans: [],
+            url: ''
         }
     },
     methods: {
+        copyUrl(indice) {
+            let texto = document.getElementById('campoUrl'+indice).innerHTML 
+            navigator.clipboard.writeText(texto);
+        },
+        loadUrl() {
+            this.url = window.location.origin;
+        },
         async loadPlans() {
             try {
                 this.carregando = true;
@@ -134,15 +150,23 @@ export default {
 
             this.dialog = false;
             this.carregando = false;
-        },
+        }
     },
     mounted() {
         this.loadPlans();
+        this.loadUrl();
     }
 
 }
 
 </script>
 
-<style></style>
+<style>
+
+.div-url {
+    display: flex;
+    align-items: center;
+}
+
+</style>
   
