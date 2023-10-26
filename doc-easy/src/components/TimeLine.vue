@@ -36,6 +36,9 @@ import ComponenteBase from '@/components/ComponenteBase.vue';
 
 export default {
   extends: ComponenteBase,
+  props: {
+    planName: String
+  },
   data: () => ({
     carregando: true,
     selecao: -1,
@@ -90,7 +93,7 @@ export default {
       this.carregando = true;
       let json = null;
       let response = null;
-      [json, response] = await executionService.loadDocumentsFromPlan('Uniedu');
+      [json, response] = await executionService.loadDocumentsFromPlan(this.planName);
       this.loadDocumentsStructure(json);
       this.carregando = false;
     } catch (error) {

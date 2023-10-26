@@ -22,8 +22,11 @@
                                     <v-text-field label="Descrição Simples" id="descricaoSimples"
                                         v-model="descricaoModal"></v-text-field>
 
-                                    <v-text-field label="Descrição Completa" id="descricaoCompleta"
-                                        v-model="descricaoCompletaModal"></v-text-field>
+                                    <!-- <v-text-field label="Descrição Completa" id="descricaoCompleta"
+                                        v-model="descricaoCompletaModal"></v-text-field> -->
+
+                                    <textarea label="Descrição Completa" id="descricaoCompleta"
+                                    v-model="descricaoCompletaModal"></textarea>
 
                                     <v-text-field label="Situação" id="situacao" v-model="situacaoModal"></v-text-field>
 
@@ -114,6 +117,9 @@ import IndicadorAcao from '@/components/IndicadorAcao.vue';
 import ComponenteBase from '@/components/ComponenteBase.vue';
 import documentService from '@/services/documentService.js'
 import router from '@/router';
+import EasyMDE from 'easymde';
+
+let editor = null;
 
 export default {
     extends: ComponenteBase,
@@ -144,7 +150,7 @@ export default {
 
                 let nome = document.getElementById('nome').value;
                 let descricaoSimples = document.getElementById('descricaoSimples').value;
-                let descricaoCompleta = document.getElementById('descricaoCompleta').value;
+                let descricaoCompleta = editor.value();
                 let situacao = document.getElementById('situacao').value;
                 let uuid = null;
 
@@ -219,12 +225,14 @@ export default {
             window.eu = [];
         },
         openEditScreen(documentItem) {
+            this.mountMarkdownEditor();
+            
             this.uuidModal = documentItem.uuid;
             this.nomeModal = documentItem.nome;
             this.descricaoModal = documentItem.descricao;
             this.descricaoCompletaModal = documentItem.descricaoCompleta;
             this.situacaoModal = documentItem.situacao;
-
+            
             this.dialog = true;
         },
         fecharModal() {
@@ -254,6 +262,33 @@ export default {
                 this.carregando = false;
             }
         },
+        mountMarkdownEditor() {
+            let contador = 1;
+            let value = setInterval(() => {
+                contador++;
+                if (contador < 50) {
+                    if (document.getElementById('descricaoCompleta') != null) {
+                        let options = {
+                            element: document.getElementById('descricaoCompleta'),
+                            spellChecker: false,
+                            nativeSpellcheck: false,
+                            showIcons : ['table', 'heading-smaller', 'heading-bigger', ],
+                            hideIcons : ['image']
+                        }
+                    
+                        const easyMDE = new EasyMDE(options);
+                        editor = easyMDE;
+                        console.log('executou');
+                        clearInterval(value);
+                        console.log('limpou');
+                    }
+                }
+                else {
+                    clearInterval(value);
+                    console.log('limpou');
+                }
+            }, 10);
+        }
     },
     mounted() {
         this.limpaLocalStorage();
@@ -261,3 +296,9 @@ export default {
     }
 }
 </script>
+
+<style>
+
+@import "easymde/dist/easymde.min.css";
+
+</style>

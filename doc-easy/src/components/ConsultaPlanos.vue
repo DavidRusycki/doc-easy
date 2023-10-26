@@ -58,7 +58,7 @@
                             <v-card-text>
                                 <div class="div-url">
                                     <!-- <v-text-field id="campoUrl" disabled>{{this.url + '/' + plan.nome}}</v-text-field>  -->
-                                    <span :id="'campoUrl'+indice">{{this.url + '/' + plan.nome}}</span>
+                                    <span :id="'campoUrl'+indice">{{this.url + '/execution/' + plan.nome}}</span>
                                     <v-btn @click="copyUrl(indice)" variant="text" class="ml-2" icon="mdi-content-copy"></v-btn>
                                 </div>
                             </v-card-text>
