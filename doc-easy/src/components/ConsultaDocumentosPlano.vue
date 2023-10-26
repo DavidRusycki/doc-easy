@@ -11,7 +11,7 @@
             </v-card-title>
 
             <template v-slot:append>
-                <v-btn color="green" icon="mdi-plus" size="small" class="mr-2">
+                <v-btn @click="mountMarkdownEditor()" color="green" icon="mdi-plus" size="small" class="mr-2">
                     <v-icon size="large" icon="mdi-plus"></v-icon>
                     <v-dialog persistent v-model="dialog" activator="parent" width="90vw">
                         <v-card>
