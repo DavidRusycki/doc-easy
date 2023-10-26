@@ -13,10 +13,10 @@
             <template v-slot:append>
                 <v-btn color="green" icon="mdi-plus" size="small" class="mr-2">
                     <v-icon size="large" icon="mdi-plus"></v-icon>
-                    <v-dialog persistent v-model="dialog" activator="parent">
+                    <v-dialog persistent v-model="dialog" activator="parent" width="90vw">
                         <v-card>
                             <v-card-text>
-                                <form @submit.prevent="submit">
+                                <form @submit.prevent="submit" @keypress="enter($event)">
                                     <v-text-field label="Nome" id="nome" v-model="nomeModal"></v-text-field>
 
                                     <v-text-field label="Descrição Simples" id="descricaoSimples"
@@ -189,6 +189,8 @@ export default {
             finally {
                 this.dialog = false;
                 this.carregando = false;
+                // Limpa os documentos do Componente de Drag and Drop.
+                window.eu = [];
             }
         },
         clearData() {
@@ -228,7 +230,7 @@ export default {
         fecharModal() {
             this.uuidModal = null;
             this.nomeModal = null;
-            this.descricaoModal = null;
+            this.descricaoModal = '';
             this.descricaoCompletaModal = null;
             this.situacaoModal = null;
 

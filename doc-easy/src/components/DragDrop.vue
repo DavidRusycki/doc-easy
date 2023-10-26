@@ -4,16 +4,17 @@
         <div class="dentro">
 
             <div class="area-cards">
-                <v-card v-for="(file, indice) in files" variant="tonal" width="150" class="card-documento">
-                    <v-icon style="margin-top: 10px;" color="#00000080" icon="mdi-file-document" size="50"></v-icon>
-                    <v-card-subtitle class="titulo-documento">
-                        {{ file.name }}
-                    </v-card-subtitle>
-
-
-                    <v-btn @click="remove(indice)" color="red" variant="text" height="25" class="botao-remover">
-                        Remover
-                    </v-btn>
+                <v-card  v-for="(file, indice) in files" variant="tonal" width="150" class="card-documento">
+                    <div v-if="file">
+                        <v-icon style="margin-top: 10px;" color="#00000080" icon="mdi-file-document" size="50"></v-icon>
+                        <v-card-subtitle class="titulo-documento">
+                            {{ file.name }}
+                        </v-card-subtitle>
+                        
+                        <v-btn @click="remove(indice)" color="red" variant="text" height="25" class="botao-remover">
+                            Remover
+                        </v-btn>
+                    </div>
                 </v-card>
             </div>
 
@@ -33,6 +34,8 @@
 </template>
 
 <script>
+import { useLocale } from 'vuetify/lib/framework.mjs';
+
 
 export default {
     props: {
@@ -59,6 +62,11 @@ export default {
             this.mountFile(file);
         },
         mountFile(files) {
+
+            if (files == null) {
+                return null;
+            }
+
             if (this.multiple === 'true') {
                 files = this.getNaoAdicionados(files);
 
@@ -160,6 +168,9 @@ export default {
             }
         },
         getFromLocalStorage() {
+            if (typeof window.eu[this.name] == 'undefined') {
+                return null;
+            }
             return window.eu[this.name];
         }
         
