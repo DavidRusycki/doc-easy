@@ -59,11 +59,11 @@ const routes = [
     ],
   },
   {
-    path: '/download',
+    path: '/execution/download',
     component: () => import('@/layouts/default/Default.vue'),
     children: [
       {
-        path: '/download',
+        path: '/execution/download',
         name: 'download',
         // route level code-splitting
         // this generates a separate chunk (about.[hash].js) for this route

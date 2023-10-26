@@ -1,16 +1,36 @@
 <template>
-  <div>
+  <div class="tela-download">
     
-    Os documentos estão em processamento e estarão disponíveis nos links abaixo:
+    <v-card class="card-download">
+      <div class="conteudo-card">
+        Os documentos estão em processamento e estarão disponíveis nos links abaixo:
+        <ul>
+          <li v-for="(link, i) in links" :key="i"> <a target="_blank" :href="link"> {{ link }}</a></li>
+        </ul>
+      </div>
+    </v-card>
 
-    <ul>
-      <li v-for="(link, i) in links" :key="i"> <a target="_blank" :href="link"> {{ link }}</a></li>
-    </ul>
     
   </div>
 </template>
 
 <style>
+
+  .conteudo-card {
+    margin-left: 2em;
+    margin-top: 1em;
+    margin-bottom: 1em;
+  }
+
+  .tela-download {
+    width: 100vw;
+    display: flex;
+    justify-content: center;
+  }
+
+  .card-download { 
+    width: 50vw;
+  }
 
 </style>
 
