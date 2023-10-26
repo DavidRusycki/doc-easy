@@ -46,6 +46,9 @@
                         </v-card>
                     </v-dialog>
                 </v-btn>
+                <v-btn color="white" size="small" @click="refresh()" >
+                    <v-icon size="large" icon="mdi-refresh"></v-icon>
+                </v-btn>
 
             </template>
 
@@ -288,6 +291,9 @@ export default {
                     console.log('limpou');
                 }
             }, 10);
+        },
+        refresh() {
+            this.loadTableRegisters();
         }
     },
     mounted() {
