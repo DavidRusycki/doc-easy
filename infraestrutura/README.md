@@ -34,3 +34,9 @@ Para configurar o Grafana é necessária a criação de dois Dashboards.
     - Default
 
 3. Configurar os logs do data source
+
+4. Adicionar no dashboard no "log type rate"
+
+```bash
+sum by(level) (count_over_time({level=~"DEBUG|INFO|WARN|ERROR", app="$app_name"} [$__interval]))
+```
